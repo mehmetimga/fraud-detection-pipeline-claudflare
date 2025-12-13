@@ -1,0 +1,704 @@
+[
+  {
+    "alert_id": "368857af-b5e0-4ff2-8cd0-c1e0ecc0f18a",
+    "transaction_id": "29383",
+    "risk_score": 0.3713572095422183,
+    "risk_level": "low",
+    "model_scores": {
+      "random_forest": 0.3273068070411682,
+      "xgboost": 0.24366873502731323,
+      "catboost": 0.5060434341430664,
+      "lightgbm": 0.3956478238105774
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:00.675786Z",
+    "credit_limit": 200000.0,
+    "customer_info": "age_29",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "8fa77e28-6db7-4f6f-8d2f-fd7dea013890",
+    "transaction_id": "6909",
+    "risk_score": 0.38684449125738707,
+    "risk_level": "low",
+    "model_scores": {
+      "random_forest": 0.335110068321228,
+      "xgboost": 0.26012104749679565,
+      "lightgbm": 0.43098753690719604,
+      "catboost": 0.5092941522598267
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:00.883665Z",
+    "credit_limit": 90000.0,
+    "customer_info": "age_31",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "2cfc2589-847f-427b-ac4b-3a882934059c",
+    "transaction_id": "19078",
+    "risk_score": 0.33743098027565904,
+    "risk_level": "low",
+    "model_scores": {
+      "random_forest": 0.3004564344882965,
+      "lightgbm": 0.3628445267677307,
+      "catboost": 0.42679786682128906,
+      "xgboost": 0.24991798400878906
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:01.090777Z",
+    "credit_limit": 90000.0,
+    "customer_info": "age_40",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "00a6cfb0-98bd-4917-a22a-c0738c694bb6",
+    "transaction_id": "3055",
+    "risk_score": 0.28178928178899426,
+    "risk_level": "low",
+    "model_scores": {
+      "xgboost": 0.10240691900253296,
+      "lightgbm": 0.28880101442337036,
+      "random_forest": 0.3125898241996765,
+      "catboost": 0.4370819330215454
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:01.174905Z",
+    "credit_limit": 350000.0,
+    "customer_info": "age_60",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "64537f91-9af5-40dc-80a7-dbf51f64eb81",
+    "transaction_id": "3561",
+    "risk_score": 0.6416427545687733,
+    "risk_level": "medium",
+    "model_scores": {
+      "catboost": 0.7208127975463867,
+      "xgboost": 0.6252827048301697,
+      "lightgbm": 0.7906278371810913,
+      "random_forest": 0.33831265568733215
+    },
+    "triggered_features": [
+      "catboost:0.72",
+      "lightgbm:0.79"
+    ],
+    "timestamp": "2025-12-13T16:35:01.632019Z",
+    "credit_limit": 80000.0,
+    "customer_info": "age_57",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "ba0f2978-aabd-4955-9b28-95e45c022862",
+    "transaction_id": "24891",
+    "risk_score": 0.3395438422175015,
+    "risk_level": "low",
+    "model_scores": {
+      "xgboost": 0.10896670818328857,
+      "lightgbm": 0.5035889744758606,
+      "catboost": 0.4274131655693054,
+      "random_forest": 0.3586633503437042
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:01.674209Z",
+    "credit_limit": 80000.0,
+    "customer_info": "age_30",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "e8a7ac30-97b4-499f-90cc-3b6bbec6d77d",
+    "transaction_id": "16626",
+    "risk_score": 0.514009037438561,
+    "risk_level": "medium",
+    "model_scores": {
+      "xgboost": 0.22059142589569092,
+      "random_forest": 0.3148435950279236,
+      "lightgbm": 0.637177586555481,
+      "catboost": 0.8283910751342773
+    },
+    "triggered_features": [
+      "catboost:0.83"
+    ],
+    "timestamp": "2025-12-13T16:35:01.798558Z",
+    "credit_limit": 50000.0,
+    "customer_info": "age_32",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "bbbb3d44-d0d7-46fc-9b0b-c1ea16517d42",
+    "transaction_id": "24413",
+    "risk_score": 0.26828820214552035,
+    "risk_level": "low",
+    "model_scores": {
+      "catboost": 0.38194596767425537,
+      "random_forest": 0.29953473806381226,
+      "lightgbm": 0.17185252904891968,
+      "xgboost": 0.21303105354309082
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:02.087428Z",
+    "credit_limit": 30000.0,
+    "customer_info": "age_38",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "32053d1a-2ca3-4bbd-86fd-cac8c455e53a",
+    "transaction_id": "29296",
+    "risk_score": 0.5788522134808932,
+    "risk_level": "medium",
+    "model_scores": {
+      "catboost": 0.8351498246192932,
+      "random_forest": 0.36010923981666565,
+      "lightgbm": 0.7149866223335266,
+      "xgboost": 0.34489285945892334
+    },
+    "triggered_features": [
+      "catboost:0.84",
+      "lightgbm:0.71"
+    ],
+    "timestamp": "2025-12-13T16:35:02.168417Z",
+    "credit_limit": 120000.0,
+    "customer_info": "age_26",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "9e248964-a0b3-4db5-886f-343d2a08a49d",
+    "transaction_id": "28443",
+    "risk_score": 0.6002808493726393,
+    "risk_level": "medium",
+    "model_scores": {
+      "random_forest": 0.4847071170806885,
+      "catboost": 0.5904868841171265,
+      "xgboost": 0.4881991744041443,
+      "lightgbm": 0.8393056988716125
+    },
+    "triggered_features": [
+      "lightgbm:0.84"
+    ],
+    "timestamp": "2025-12-13T16:35:02.418481Z",
+    "credit_limit": 120000.0,
+    "customer_info": "age_37",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "feeefa51-69ec-4306-bd1f-e53c5ee0efbb",
+    "transaction_id": "27686",
+    "risk_score": 0.29916131496429443,
+    "risk_level": "low",
+    "model_scores": {
+      "random_forest": 0.3147408962249756,
+      "catboost": 0.34640371799468994,
+      "lightgbm": 0.3348112106323242,
+      "xgboost": 0.2140512466430664
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:02.499999Z",
+    "credit_limit": 30000.0,
+    "customer_info": "age_24",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "6ef5da39-a235-4bdf-a4bf-026e0ea289d4",
+    "transaction_id": "29569",
+    "risk_score": 0.34173909355612364,
+    "risk_level": "low",
+    "model_scores": {
+      "lightgbm": 0.3380926251411438,
+      "xgboost": 0.25915277004241943,
+      "catboost": 0.4395376443862915,
+      "random_forest": 0.3212473392486572
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:02.542551Z",
+    "credit_limit": 50000.0,
+    "customer_info": "age_48",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "31fd4383-0d34-4505-a14c-82cb14ff6551",
+    "transaction_id": "2422",
+    "risk_score": 0.5869596074609196,
+    "risk_level": "medium",
+    "model_scores": {
+      "lightgbm": 0.8709596991539001,
+      "catboost": 0.6842408776283264,
+      "xgboost": 0.35159462690353394,
+      "random_forest": 0.43843233585357666
+    },
+    "triggered_features": [
+      "lightgbm:0.87"
+    ],
+    "timestamp": "2025-12-13T16:35:02.625037Z",
+    "credit_limit": 20000.0,
+    "customer_info": "age_24",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "c60c63bd-cc12-43e1-a22b-8f6b4933e5e3",
+    "transaction_id": "9007",
+    "risk_score": 0.5244506509865031,
+    "risk_level": "medium",
+    "model_scores": {
+      "xgboost": 0.28900521993637085,
+      "random_forest": 0.30429157614707947,
+      "lightgbm": 0.6329411268234253,
+      "catboost": 0.805199146270752
+    },
+    "triggered_features": [
+      "catboost:0.81"
+    ],
+    "timestamp": "2025-12-13T16:35:02.666351Z",
+    "credit_limit": 150000.0,
+    "customer_info": "age_35",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "7c9cdc56-8e45-4d7f-b90f-8836527f97a4",
+    "transaction_id": "12067",
+    "risk_score": 0.41372481163810276,
+    "risk_level": "low",
+    "model_scores": {
+      "random_forest": 0.31396418809890747,
+      "catboost": 0.5690320134162903,
+      "lightgbm": 0.6311196684837341,
+      "xgboost": 0.1443580985069275
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:02.917093Z",
+    "credit_limit": 70000.0,
+    "customer_info": "age_53",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "7b7204ab-3ed9-45aa-9e6b-c60975d6be88",
+    "transaction_id": "9386",
+    "risk_score": 0.6083117232603185,
+    "risk_level": "medium",
+    "model_scores": {
+      "random_forest": 0.5311371088027954,
+      "catboost": 0.5745890736579895,
+      "xgboost": 0.6190794110298157,
+      "lightgbm": 0.6948863863945007
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:02.999489Z",
+    "credit_limit": 10000.0,
+    "customer_info": "age_42",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "9251edea-c80a-4d4a-ab51-35ba922ce0ba",
+    "transaction_id": "17779",
+    "risk_score": 0.5714233289746677,
+    "risk_level": "medium",
+    "model_scores": {
+      "random_forest": 0.28048965334892273,
+      "lightgbm": 0.6657562851905823,
+      "xgboost": 0.39316868782043457,
+      "catboost": 0.8487718105316162
+    },
+    "triggered_features": [
+      "catboost:0.85"
+    ],
+    "timestamp": "2025-12-13T16:35:03.250127Z",
+    "credit_limit": 60000.0,
+    "customer_info": "age_59",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "4dba4de0-6848-4796-ba56-77cecd5f1f44",
+    "transaction_id": "9493",
+    "risk_score": 0.5154022749732523,
+    "risk_level": "medium",
+    "model_scores": {
+      "lightgbm": 0.6709865927696228,
+      "xgboost": 0.40942543745040894,
+      "catboost": 0.5717013478279114,
+      "random_forest": 0.39075279235839844
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:03.498717Z",
+    "credit_limit": 50000.0,
+    "customer_info": "age_38",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "f6d01b71-6b85-4900-807c-592dc8823b0e",
+    "transaction_id": "14584",
+    "risk_score": 0.642911262371961,
+    "risk_level": "medium",
+    "model_scores": {
+      "lightgbm": 0.7743730545043945,
+      "catboost": 0.6340813040733337,
+      "xgboost": 0.6602354049682617,
+      "random_forest": 0.4534718990325928
+    },
+    "triggered_features": [
+      "lightgbm:0.77"
+    ],
+    "timestamp": "2025-12-13T16:35:03.791065Z",
+    "credit_limit": 60000.0,
+    "customer_info": "age_43",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "f39ebaef-5a9a-43cd-a726-b97d6694d6ac",
+    "transaction_id": "24177",
+    "risk_score": 0.30550964264308705,
+    "risk_level": "low",
+    "model_scores": {
+      "random_forest": 0.2960433065891266,
+      "xgboost": 0.11145532131195068,
+      "lightgbm": 0.45266157388687134,
+      "catboost": 0.38752222061157227
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:03.874317Z",
+    "credit_limit": 110000.0,
+    "customer_info": "age_30",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "b15aa137-9135-4bdd-b7a8-ee0dbb8634dc",
+    "transaction_id": "1133",
+    "risk_score": 0.4983251831110786,
+    "risk_level": "low",
+    "model_scores": {
+      "catboost": 0.7275265455245972,
+      "xgboost": 0.2965342402458191,
+      "lightgbm": 0.6347823143005371,
+      "random_forest": 0.27069830894470215
+    },
+    "triggered_features": [
+      "catboost:0.73"
+    ],
+    "timestamp": "2025-12-13T16:35:04.038885Z",
+    "credit_limit": 270000.0,
+    "customer_info": "age_44",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "14d4cc88-2ed9-4ec1-8f81-a654b990cdd6",
+    "transaction_id": "19698",
+    "risk_score": 0.5536744489389308,
+    "risk_level": "medium",
+    "model_scores": {
+      "lightgbm": 0.669127881526947,
+      "random_forest": 0.30960673093795776,
+      "xgboost": 0.45853686332702637,
+      "catboost": 0.7028899192810059
+    },
+    "triggered_features": [
+      "catboost:0.70"
+    ],
+    "timestamp": "2025-12-13T16:35:04.330720Z",
+    "credit_limit": 120000.0,
+    "customer_info": "age_38",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "ca66a8af-267e-44e7-b8ed-94840fdf0d21",
+    "transaction_id": "11947",
+    "risk_score": 0.2676695094389074,
+    "risk_level": "low",
+    "model_scores": {
+      "random_forest": 0.31487250328063965,
+      "xgboost": 0.18374872207641602,
+      "catboost": 0.2914769649505615,
+      "lightgbm": 0.3074089288711548
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:04.372708Z",
+    "credit_limit": 30000.0,
+    "customer_info": "age_25",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "b26c0865-6195-4eda-b2e3-543a88916cac",
+    "transaction_id": "23502",
+    "risk_score": 0.2784974873065948,
+    "risk_level": "low",
+    "model_scores": {
+      "xgboost": 0.20908969640731812,
+      "random_forest": 0.28299906849861145,
+      "lightgbm": 0.231448233127594,
+      "catboost": 0.3828437328338623
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:04.495723Z",
+    "credit_limit": 60000.0,
+    "customer_info": "age_31",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "20c03baf-1b5d-4c55-87be-62ca9fc88a6c",
+    "transaction_id": "9719",
+    "risk_score": 0.32882766162647914,
+    "risk_level": "low",
+    "model_scores": {
+      "catboost": 0.3557157516479492,
+      "random_forest": 0.30467283725738525,
+      "xgboost": 0.2733081579208374,
+      "lightgbm": 0.3827330470085144
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:04.867846Z",
+    "credit_limit": 50000.0,
+    "customer_info": "age_31",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "8ef11227-9ecc-47be-8eab-598309edc061",
+    "transaction_id": "6348",
+    "risk_score": 0.3641671029960408,
+    "risk_level": "low",
+    "model_scores": {
+      "lightgbm": 0.37768059968948364,
+      "xgboost": 0.2978125214576721,
+      "catboost": 0.42617714405059814,
+      "random_forest": 0.35339000821113586
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:05.033879Z",
+    "credit_limit": 260000.0,
+    "customer_info": "age_31",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "fa54dc1d-8228-41c7-896e-4376fb0630a0",
+    "transaction_id": "17721",
+    "risk_score": 0.2881189952878391,
+    "risk_level": "low",
+    "model_scores": {
+      "xgboost": 0.10784649848937988,
+      "random_forest": 0.35492101311683655,
+      "catboost": 0.3084631562232971,
+      "lightgbm": 0.43792790174484253
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:05.283045Z",
+    "credit_limit": 150000.0,
+    "customer_info": "age_36",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "2d5165c1-d5f9-4787-b741-818e615e2acf",
+    "transaction_id": "20130",
+    "risk_score": 0.4746335797450122,
+    "risk_level": "low",
+    "model_scores": {
+      "lightgbm": 0.828604519367218,
+      "catboost": 0.5477916598320007,
+      "random_forest": 0.4629534184932709,
+      "xgboost": 0.1253068447113037
+    },
+    "triggered_features": [
+      "lightgbm:0.83"
+    ],
+    "timestamp": "2025-12-13T16:35:05.408184Z",
+    "credit_limit": 140000.0,
+    "customer_info": "age_42",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "e08a5c46-56c8-4aa9-8848-f774327b6e6d",
+    "transaction_id": "27749",
+    "risk_score": 0.5887328701860765,
+    "risk_level": "medium",
+    "model_scores": {
+      "catboost": 0.7035113573074341,
+      "lightgbm": 0.7939621806144714,
+      "xgboost": 0.35295552015304565,
+      "random_forest": 0.5167585611343384
+    },
+    "triggered_features": [
+      "catboost:0.70",
+      "lightgbm:0.79"
+    ],
+    "timestamp": "2025-12-13T16:35:05.531033Z",
+    "credit_limit": 130000.0,
+    "customer_info": "age_26",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "9d133f6c-8df1-47e7-b91e-471dacddde6b",
+    "transaction_id": "9234",
+    "risk_score": 0.4922291163135976,
+    "risk_level": "low",
+    "model_scores": {
+      "xgboost": 0.1069633960723877,
+      "catboost": 0.7287310361862183,
+      "random_forest": 0.36963382363319397,
+      "lightgbm": 0.7701303362846375
+    },
+    "triggered_features": [
+      "catboost:0.73",
+      "lightgbm:0.77"
+    ],
+    "timestamp": "2025-12-13T16:35:05.739322Z",
+    "credit_limit": 140000.0,
+    "customer_info": "age_30",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "19528c4c-d569-4b76-8cec-e06bf9693cff",
+    "transaction_id": "14822",
+    "risk_score": 0.2657259141697603,
+    "risk_level": "low",
+    "model_scores": {
+      "xgboost": 0.14710235595703125,
+      "catboost": 0.1405181884765625,
+      "random_forest": 0.3077658414840698,
+      "lightgbm": 0.5389850735664368
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:05.781119Z",
+    "credit_limit": 80000.0,
+    "customer_info": "age_25",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "98a0f201-0eb8-4376-842e-d646096c535d",
+    "transaction_id": "16730",
+    "risk_score": 0.5091016573064467,
+    "risk_level": "medium",
+    "model_scores": {
+      "catboost": 0.49868834018707275,
+      "random_forest": 0.3398919105529785,
+      "xgboost": 0.6093939542770386,
+      "lightgbm": 0.5236602425575256
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:05.865496Z",
+    "credit_limit": 50000.0,
+    "customer_info": "age_34",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "974a65bf-2c90-4fd7-8af0-fe6917d48572",
+    "transaction_id": "17619",
+    "risk_score": 0.3958433515885297,
+    "risk_level": "low",
+    "model_scores": {
+      "random_forest": 0.33234941959381104,
+      "xgboost": 0.4006141424179077,
+      "catboost": 0.3737177848815918,
+      "lightgbm": 0.46515727043151855
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:05.906545Z",
+    "credit_limit": 80000.0,
+    "customer_info": "age_32",
+    "context": "edu_1"
+  },
+  {
+    "alert_id": "da3967bf-f7f3-41bf-bfbb-1be8863f7c86",
+    "transaction_id": "14974",
+    "risk_score": 0.7272506776977986,
+    "risk_level": "high",
+    "model_scores": {
+      "catboost": 0.7211552858352661,
+      "xgboost": 0.7346201539039612,
+      "random_forest": 0.5582793951034546,
+      "lightgbm": 0.8523865342140198
+    },
+    "triggered_features": [
+      "catboost:0.72",
+      "xgboost:0.73",
+      "lightgbm:0.85"
+    ],
+    "timestamp": "2025-12-13T16:35:06.032015Z",
+    "credit_limit": 30000.0,
+    "customer_info": "age_55",
+    "context": "edu_3"
+  },
+  {
+    "alert_id": "b66f94b5-43d8-423e-a6ed-a137622476d9",
+    "transaction_id": "2752",
+    "risk_score": 0.29850413694101224,
+    "risk_level": "low",
+    "model_scores": {
+      "lightgbm": 0.3647107481956482,
+      "catboost": 0.2607165575027466,
+      "xgboost": 0.2603074908256531,
+      "random_forest": 0.3368690311908722
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:06.115445Z",
+    "credit_limit": 360000.0,
+    "customer_info": "age_39",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "92c564ff-fa36-40dc-ad5d-62a820c82d43",
+    "transaction_id": "25477",
+    "risk_score": 0.2693612768369563,
+    "risk_level": "low",
+    "model_scores": {
+      "lightgbm": 0.3831566572189331,
+      "catboost": 0.29299652576446533,
+      "random_forest": 0.3101581633090973,
+      "xgboost": 0.13021159172058105
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:06.156675Z",
+    "credit_limit": 70000.0,
+    "customer_info": "age_24",
+    "context": "edu_4"
+  },
+  {
+    "alert_id": "88708887-944e-45f6-9794-35cf11debfcb",
+    "transaction_id": "16126",
+    "risk_score": 0.6959126188474544,
+    "risk_level": "medium",
+    "model_scores": {
+      "lightgbm": 0.6517309546470642,
+      "catboost": 0.7744428515434265,
+      "random_forest": 0.3738909661769867,
+      "xgboost": 0.8459407091140747
+    },
+    "triggered_features": [
+      "catboost:0.77",
+      "xgboost:0.85"
+    ],
+    "timestamp": "2025-12-13T16:35:06.365188Z",
+    "credit_limit": 30000.0,
+    "customer_info": "age_34",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "a31f01d0-ec05-402f-86c6-57a04e3469e1",
+    "transaction_id": "29016",
+    "risk_score": 0.5364554243929247,
+    "risk_level": "medium",
+    "model_scores": {
+      "lightgbm": 0.7911034822463989,
+      "catboost": 0.6497429013252258,
+      "xgboost": 0.268004834651947,
+      "random_forest": 0.4555298686027527
+    },
+    "triggered_features": [
+      "lightgbm:0.79"
+    ],
+    "timestamp": "2025-12-13T16:35:06.530616Z",
+    "credit_limit": 140000.0,
+    "customer_info": "age_43",
+    "context": "edu_2"
+  },
+  {
+    "alert_id": "8a7fd8fe-8e99-48b8-ad14-10a907611482",
+    "transaction_id": "14255",
+    "risk_score": 0.251657659516615,
+    "risk_level": "low",
+    "model_scores": {
+      "catboost": 0.44201087951660156,
+      "xgboost": 0.05693453550338745,
+      "random_forest": 0.32548782229423523,
+      "lightgbm": 0.20174741744995117
+    },
+    "triggered_features": [],
+    "timestamp": "2025-12-13T16:35:06.655820Z",
+    "credit_limit": 50000.0,
+    "customer_info": "age_22",
+    "context": "edu_2"
+  }
+]

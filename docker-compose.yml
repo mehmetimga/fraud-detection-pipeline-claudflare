@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # NATS Message Broker
+  nats:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222"  # Monitoring
+    command: ["-js", "-m", "8222"]
+    healthcheck:
+      test: ["CMD", "nats-server", "-sl"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Fraud Detection Pipeline (when built)
+  fraud-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      nats:
+        condition: service_healthy
+    environment:
+      - NATS_URL=nats://nats:4222
+      - RUST_LOG=info
+    volumes:
+      - ./models:/app/models:ro
+      - ./config:/app/config:ro
+    restart: unless-stopped
+    profiles:
+      - full
+
+  # Python Training Environment
+  training:
+    build:
+      context: ./training
+      dockerfile: Dockerfile
+    volumes:
+      - ./training:/app/training
+      - ./models:/app/models
+    working_dir: /app/training
+    profiles:
+      - training
+

@@ -1,0 +1,28 @@
+# This directory will contain training data
+# 
+# The train.py script will generate synthetic data here if no data file is provided.
+# 
+# To use your own data, provide a CSV file with the following columns:
+# - amount
+# - currency
+# - merchant_category
+# - country
+# - email_domain
+# - hour_of_day
+# - day_of_week
+# - is_international
+# - is_online
+# - card_present
+# - pin_entered
+# - tx_count_last_hour
+# - tx_amount_last_hour
+# - tx_count_last_24h
+# - tx_amount_last_24h
+# - unique_merchants_24h
+# - avg_tx_amount
+# - failed_tx_last_hour
+# - distance_from_last_tx
+# - time_since_last_tx
+# - account_age_days
+# - is_fraud (target variable: 0 or 1)
+

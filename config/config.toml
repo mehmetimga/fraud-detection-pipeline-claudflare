@@ -1,0 +1,49 @@
+# Fraud Detection Pipeline Configuration
+
+[nats]
+url = "nats://localhost:4222"
+transaction_subject = "transactions"
+alert_subject = "fraud.alerts"
+
+[models]
+# Path to ONNX models directory
+models_dir = "models"
+
+# Number of threads for ONNX inference per model
+# 1 = single-threaded (default, fastest for small models)
+# 2+ = multi-threaded (can help with larger models)
+onnx_threads = 1
+
+# Model weights for ensemble scoring
+[models.weights]
+catboost = 0.25
+xgboost = 0.25
+lightgbm = 0.20
+random_forest = 0.15
+isolation_forest = 0.15
+
+[detection]
+# Risk score threshold (0.0 - 1.0)
+threshold = 0.25
+
+# Risk level thresholds
+[detection.risk_levels]
+low = 0.3
+medium = 0.5
+high = 0.7
+critical = 0.9
+
+[pipeline]
+# Number of worker threads
+workers = 6
+
+# Batch size for inference (if batch processing enabled)
+batch_size = 32
+
+# Processing timeout in milliseconds
+timeout_ms = 1000
+
+[logging]
+level = "info"
+format = "json"
+

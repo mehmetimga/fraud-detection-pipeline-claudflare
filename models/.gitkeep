@@ -1,0 +1,11 @@
+# This directory will contain trained ONNX models after running the training script
+# 
+# Expected files after training:
+# - catboost.onnx
+# - xgboost.onnx
+# - lightgbm.onnx
+# - random_forest.onnx
+# - isolation_forest.onnx
+# - model_comparison.csv
+# - feature_info.json
+

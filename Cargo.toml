@@ -1,0 +1,55 @@
+[package]
+name = "fraud-detection-pipeline"
+version = "0.1.0"
+edition = "2021"
+description = "Real-time payment fraud detection pipeline using ML models"
+authors = ["Fraud Detection Team"]
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+
+# NATS messaging
+async-nats = "0.35"
+
+# ML inference
+ort = "2.0.0-rc.10"
+ndarray = "0.15"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Configuration
+config = "0.14"
+
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+thiserror = "1"
+anyhow = "1"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Utilities
+uuid = { version = "1", features = ["v4", "serde"] }
+rand = "0.8"
+
+[[bin]]
+name = "fraud-pipeline"
+path = "src/main.rs"
+
+[[bin]]
+name = "test-producer"
+path = "tools/test_producer.rs"
+
+[profile.release]
+codegen-units = 1
+debug = true
+lto = "fat"
+opt-level = 3
+
