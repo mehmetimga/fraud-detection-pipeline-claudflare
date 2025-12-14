@@ -12,7 +12,7 @@ models_dir = "models"
 # Inference strategy:
 # - "primary": Use single best model (XGBoost) - fast, recommended for most cases
 # - "ensemble": Use all models with weighted average - maximum accuracy for high-stakes
-strategy = "primary"
+strategy = "ensemble"
 
 # Primary model for single-model strategy (used when strategy = "primary")
 # Based on R analysis: XGBoost achieved best ROC-AUC (0.787)
@@ -41,7 +41,7 @@ ensemble = 0.56
 [detection]
 # Risk score threshold (0.0 - 1.0)
 # Set to XGBoost optimal threshold from R analysis
-threshold = 0.61
+threshold = 0.56
 
 # Risk level thresholds
 [detection.risk_levels]

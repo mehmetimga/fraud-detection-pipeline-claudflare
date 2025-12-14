@@ -49,8 +49,6 @@ scripts/r/figure/
 scripts/r/catboost_info/
 
 # Generated reports
-scripts/r/*.html
-*.html
 Rplots.pdf
 *.pdf
 

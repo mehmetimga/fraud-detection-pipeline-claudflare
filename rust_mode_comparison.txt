@@ -1,0 +1,24 @@
+=== Rust Pipeline Mode Comparison ===
+Date: Sat 13 Dec 2025 19:23:13 PST
+
+
+=== XGBoost Primary Mode ===
+Strategy: primary
+Primary Model: xgboost
+Threshold: 0.61
+
+
+
+=== CatBoost Primary Mode ===
+Strategy: primary
+Primary Model: catboost
+Threshold: 0.57
+
+
+
+=== Ensemble Mode ===
+Strategy: ensemble
+Primary Model: xgboost
+Threshold: 0.56
+
+

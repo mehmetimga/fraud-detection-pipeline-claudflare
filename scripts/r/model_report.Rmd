@@ -55,14 +55,14 @@ best_model <- results %>%
 ensemble <- results %>% filter(model == "ensemble")
 ```
 
-| Metric | Value |
-|--------|-------|
-| **Best Single Model** | `r toupper(best_model$model)` |
-| **Best ROC-AUC** | `r sprintf("%.4f", best_model$roc_auc)` |
-| **Ensemble ROC-AUC** | `r sprintf("%.4f", ensemble$roc_auc)` |
-| **Best F1 Score** | `r sprintf("%.4f", max(results$f1))` |
-| **Dataset Size** | 30,000 transactions |
-| **Default Rate** | ~22% |
+| Metric                | Value                                   |
+|-----------------------|-----------------------------------------|
+| **Best Single Model** | `r toupper(best_model$model)`           |
+| **Best ROC-AUC**      | `r sprintf("%.4f", best_model$roc_auc)` |
+| **Ensemble ROC-AUC**  | `r sprintf("%.4f", ensemble$roc_auc)`   |
+| **Best F1 Score**     | `r sprintf("%.4f", max(results$f1))`    |
+| **Dataset Size**      | 30,000 transactions                     |
+| **Default Rate**      | \~22%                                   |
 
 <br>
 
@@ -396,12 +396,12 @@ winner <- ifelse(xgb_wins > cb_wins, "XGBoost", "CatBoost")
 winner_color <- ifelse(winner == "XGBoost", "#3498db", "#e74c3c")
 ```
 
-| Statistic | Value |
-|-----------|-------|
-| **Overall Winner** | `r winner` |
-| **XGBoost Wins** | `r xgb_wins` metrics |
-| **CatBoost Wins** | `r cb_wins` metrics |
-| **Ties** | `r ties` metrics |
+| Statistic              | Value                                          |
+|------------------------|------------------------------------------------|
+| **Overall Winner**     | `r winner`                                     |
+| **XGBoost Wins**       | `r xgb_wins` metrics                           |
+| **CatBoost Wins**      | `r cb_wins` metrics                            |
+| **Ties**               | `r ties` metrics                               |
 | **ROC-AUC Difference** | `r sprintf("%+.4f", xgb$roc_auc - cb$roc_auc)` |
 
 **Analysis**: `r winner` outperforms in `r max(xgb_wins, cb_wins)` out of 5 metrics. The performance difference is `r ifelse(abs(xgb$roc_auc - cb$roc_auc) < 0.01, "marginal (< 1%)", "notable")`, suggesting both models are viable for production use.
@@ -498,7 +498,7 @@ benefits %>%
 ## When to Use Ensemble vs Single Model
 
 | Scenario | Recommendation | Reason |
-|----------|---------------|--------|
+|----|----|----|
 | **Real-time Processing** | Single Model (XGBoost) | Lower latency (51μs vs 116μs) |
 | **High-Value Transactions** | Ensemble | Maximum accuracy |
 | **Resource Constrained** | Single Model | Less memory/compute |
@@ -511,13 +511,13 @@ benefits %>%
 
 ## Key Takeaways
 
-1. **Best Performing Model**: `r toupper(best_model$model)` achieved the highest ROC-AUC of `r sprintf("%.4f", best_model$roc_auc)`
+1.  **Best Performing Model**: `r toupper(best_model$model)` achieved the highest ROC-AUC of `r sprintf("%.4f", best_model$roc_auc)`
 
-2. **Ensemble Advantage**: The ensemble model combining all algorithms achieved ROC-AUC of `r sprintf("%.4f", ensemble$roc_auc)`, providing robust predictions
+2.  **Ensemble Advantage**: The ensemble model combining all algorithms achieved ROC-AUC of `r sprintf("%.4f", ensemble$roc_auc)`, providing robust predictions
 
-3. **Threshold Optimization**: Models benefit from custom thresholds rather than the default 0.5
+3.  **Threshold Optimization**: Models benefit from custom thresholds rather than the default 0.5
 
-4. **Class Imbalance**: With ~22% default rate, class weights and balanced sampling are essential
+4.  **Class Imbalance**: With \~22% default rate, class weights and balanced sampling are essential
 
 ## Recommendations
 
