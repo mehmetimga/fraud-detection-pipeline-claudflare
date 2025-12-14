@@ -1,6 +1,6 @@
 //! Multi-model inference engine for fraud detection
 
-use crate::config::AppConfig;
+use crate::config::{AppConfig, InferenceStrategy};
 use crate::models::aggregator::ScoreAggregator;
 use crate::models::loader::{LoadedModel, ModelLoader};
 use crate::types::alert::{FraudAlert, RiskLevel, RiskLevelThresholds};
@@ -10,7 +10,7 @@ use ort::memory::Allocator;
 use ort::value::{DynMapValueType, DynSequenceValueType, DowncastableTarget};
 use std::collections::HashMap;
 use std::sync::RwLock;
-use tracing::{debug, error, warn};
+use tracing::{debug, error, info, warn};
 
 /// Result of model inference
 #[derive(Debug, Clone)]
@@ -53,6 +53,12 @@ pub struct InferenceEngine {
     models: Vec<RwLock<LoadedModel>>,
     /// Score aggregator for combining model outputs
     aggregator: ScoreAggregator,
+    /// Inference strategy: primary model or ensemble
+    strategy: InferenceStrategy,
+    /// Primary model name (for primary strategy)
+    primary_model: String,
+    /// Per-model optimal thresholds
+    model_thresholds: HashMap<String, f64>,
 }
 
 impl InferenceEngine {
@@ -67,7 +73,19 @@ impl InferenceEngine {
 
         let aggregator = ScoreAggregator::new(config.models.weights.clone());
 
-        Ok(Self { models, aggregator })
+        info!(
+            strategy = ?config.models.strategy,
+            primary_model = %config.models.primary_model,
+            "Inference engine initialized"
+        );
+
+        Ok(Self {
+            models,
+            aggregator,
+            strategy: config.models.strategy.clone(),
+            primary_model: config.models.primary_model.clone(),
+            model_thresholds: config.models.thresholds.clone(),
+        })
     }
 
     /// Create inference engine with custom models directory
@@ -89,7 +107,41 @@ impl InferenceEngine {
             .collect();
         let aggregator = ScoreAggregator::new(weights);
 
-        Ok(Self { models, aggregator })
+        // Default to primary strategy with xgboost
+        let mut thresholds = HashMap::new();
+        thresholds.insert("xgboost".to_string(), 0.61);
+        thresholds.insert("ensemble".to_string(), 0.56);
+
+        Ok(Self {
+            models,
+            aggregator,
+            strategy: InferenceStrategy::Primary,
+            primary_model: "xgboost".to_string(),
+            model_thresholds: thresholds,
+        })
+    }
+
+    /// Get the current inference strategy
+    pub fn strategy(&self) -> &InferenceStrategy {
+        &self.strategy
+    }
+
+    /// Get the optimal threshold for the current strategy
+    pub fn optimal_threshold(&self) -> f64 {
+        match self.strategy {
+            InferenceStrategy::Primary => {
+                self.model_thresholds
+                    .get(&self.primary_model)
+                    .copied()
+                    .unwrap_or(0.61)
+            }
+            InferenceStrategy::Ensemble => {
+                self.model_thresholds
+                    .get("ensemble")
+                    .copied()
+                    .unwrap_or(0.56)
+            }
+        }
     }
 
     /// Get the number of loaded models
@@ -105,8 +157,90 @@ impl InferenceEngine {
             .collect()
     }
 
-    /// Run inference on feature vector
+    /// Run inference on feature vector using the configured strategy
     pub fn predict(&self, features: &[f32]) -> Result<PredictionResult> {
+        match self.strategy {
+            InferenceStrategy::Primary => self.predict_primary(features),
+            InferenceStrategy::Ensemble => self.predict_ensemble(features),
+        }
+    }
+
+    /// Run inference using only the primary model (fast path)
+    fn predict_primary(&self, features: &[f32]) -> Result<PredictionResult> {
+        let mut model_scores = HashMap::new();
+        let mut primary_score = None;
+
+        // Find and run only the primary model
+        for model_lock in &self.models {
+            let model_name;
+            let is_primary;
+
+            {
+                let model = model_lock
+                    .read()
+                    .map_err(|e| anyhow::anyhow!("Lock error: {}", e))?;
+                model_name = model.name.clone();
+                is_primary = model_name == self.primary_model;
+            }
+
+            if is_primary {
+                let mut model = model_lock
+                    .write()
+                    .map_err(|e| anyhow::anyhow!("Lock error: {}", e))?;
+
+                match self.run_single_model(&mut model, features) {
+                    Ok(score) => {
+                        primary_score = Some(score);
+                        model_scores.insert(model_name, score);
+                    }
+                    Err(e) => {
+                        error!(
+                            model = %model_name,
+                            error = %e,
+                            "Primary model inference failed, falling back to ensemble"
+                        );
+                        // Fall back to ensemble on primary model failure
+                        return self.predict_ensemble(features);
+                    }
+                }
+                break;
+            }
+        }
+
+        let risk_score = primary_score.unwrap_or_else(|| {
+            warn!(
+                primary_model = %self.primary_model,
+                "Primary model not found, falling back to ensemble"
+            );
+            // Fall back to ensemble if primary model not found
+            if let Ok(result) = self.predict_ensemble(features) {
+                return result.risk_score;
+            }
+            0.5
+        });
+
+        let triggered_features: Vec<String> = model_scores
+            .iter()
+            .filter(|(_, &score)| score > self.optimal_threshold())
+            .map(|(name, score)| format!("{}:{:.2}", name, score))
+            .collect();
+
+        debug!(
+            strategy = "primary",
+            model = %self.primary_model,
+            risk_score = risk_score,
+            "Primary model inference complete"
+        );
+
+        Ok(PredictionResult {
+            risk_score,
+            model_scores,
+            triggered_features,
+        })
+    }
+
+    /// Run inference using all models (ensemble - maximum accuracy)
+    fn predict_ensemble(&self, features: &[f32]) -> Result<PredictionResult> {
         let mut model_scores = HashMap::new();
 
         for model_lock in &self.models {
@@ -137,20 +271,22 @@ impl InferenceEngine {
             }
         }
 
-        // Aggregate scores
+        // Aggregate scores using weighted ensemble
         let risk_score = self.aggregator.aggregate(&model_scores);
 
         // Identify triggered features (models with high scores)
+        let ensemble_threshold = self.model_thresholds.get("ensemble").copied().unwrap_or(0.56);
         let triggered_features: Vec<String> = model_scores
             .iter()
-            .filter(|(_, &score)| score > 0.7)
+            .filter(|(_, &score)| score > ensemble_threshold)
             .map(|(name, score)| format!("{}:{:.2}", name, score))
             .collect();
 
         debug!(
+            strategy = "ensemble",
             risk_score = risk_score,
             model_scores = ?model_scores,
-            "Inference complete"
+            "Ensemble inference complete"
         );
 
         Ok(PredictionResult {

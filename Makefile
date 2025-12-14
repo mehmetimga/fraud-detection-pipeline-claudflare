@@ -103,6 +103,14 @@ install-python-deps:
 train:
 	cd training && python train.py
 
+## Train models with hyperparameter tuning (slower but better)
+train-tuned:
+	cd training && python train_tuned.py --n-iter 20 --cv 3
+
+## Train tuned with more iterations (best results, slowest)
+train-tuned-full:
+	cd training && python train_tuned.py --n-iter 50 --cv 5
+
 ## Train models with verbose output
 train-verbose:
 	cd training && python train.py --verbose

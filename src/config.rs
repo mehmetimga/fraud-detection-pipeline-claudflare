@@ -7,6 +7,17 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::Path;
 
+/// Inference strategy for fraud detection
+#[derive(Debug, Clone, Deserialize, PartialEq, Default)]
+#[serde(rename_all = "lowercase")]
+pub enum InferenceStrategy {
+    /// Use primary model only (XGBoost by default) - fast, optimized threshold
+    #[default]
+    Primary,
+    /// Use all models with weighted ensemble - maximum accuracy for high-stakes
+    Ensemble,
+}
+
 /// Main application configuration
 #[derive(Debug, Clone, Deserialize)]
 pub struct AppConfig {
@@ -33,8 +44,17 @@ pub struct NatsConfig {
 pub struct ModelsConfig {
     /// Directory containing ONNX model files
     pub models_dir: String,
+    /// Inference strategy: "primary" (single model) or "ensemble" (all models)
+    #[serde(default)]
+    pub strategy: InferenceStrategy,
+    /// Primary model name for single-model strategy (default: xgboost)
+    #[serde(default = "default_primary_model")]
+    pub primary_model: String,
     /// Model weights for ensemble scoring
     pub weights: HashMap<String, f64>,
+    /// Per-model optimal thresholds (from R analysis)
+    #[serde(default = "default_model_thresholds")]
+    pub thresholds: HashMap<String, f64>,
     /// Number of threads for ONNX inference per model (default: 1)
     #[serde(default = "default_onnx_threads")]
     pub onnx_threads: usize,
@@ -42,6 +62,21 @@ pub struct ModelsConfig {
 
 fn default_onnx_threads() -> usize {
     1
+}
+
+fn default_primary_model() -> String {
+    "xgboost".to_string()
+}
+
+fn default_model_thresholds() -> HashMap<String, f64> {
+    let mut thresholds = HashMap::new();
+    // Optimal thresholds from R analysis
+    thresholds.insert("xgboost".to_string(), 0.61);
+    thresholds.insert("lightgbm".to_string(), 0.60);
+    thresholds.insert("catboost".to_string(), 0.57);
+    thresholds.insert("random_forest".to_string(), 0.33);
+    thresholds.insert("ensemble".to_string(), 0.56);
+    thresholds
 }
 
 /// Detection configuration
@@ -109,11 +144,14 @@ impl Default for AppConfig {
             },
             models: ModelsConfig {
                 models_dir: "models".to_string(),
+                strategy: InferenceStrategy::Primary,
+                primary_model: "xgboost".to_string(),
                 weights,
+                thresholds: default_model_thresholds(),
                 onnx_threads: 1,
             },
             detection: DetectionConfig {
-                threshold: 0.7,
+                threshold: 0.61, // XGBoost optimal threshold from R analysis
                 risk_levels: RiskLevelThresholds::default(),
             },
             pipeline: PipelineConfig {
@@ -137,8 +175,17 @@ mod tests {
     fn test_default_config() {
         let config = AppConfig::default();
         assert_eq!(config.nats.url, "nats://localhost:4222");
-        assert_eq!(config.detection.threshold, 0.7);
+        assert_eq!(config.detection.threshold, 0.61); // XGBoost optimal threshold
         assert_eq!(config.models.weights.len(), 5);
+        assert_eq!(config.models.strategy, InferenceStrategy::Primary);
+        assert_eq!(config.models.primary_model, "xgboost");
+    }
+
+    #[test]
+    fn test_model_thresholds() {
+        let thresholds = default_model_thresholds();
+        assert_eq!(thresholds.get("xgboost"), Some(&0.61));
+        assert_eq!(thresholds.get("ensemble"), Some(&0.56));
     }
 }
 

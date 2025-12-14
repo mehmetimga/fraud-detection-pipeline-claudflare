@@ -33,14 +33,45 @@ ENV/
 
 # ML Models (generated, large files)
 *.onnx
+*.pkl
+*.rds
 models/*.onnx
 models/*.csv
 models/*.json
 models/*.png
 
-# Data files
+# Data files (large, should be downloaded)
 training/data/*.csv
+training/data/*.parquet
+training/data/*.xls
 !training/data/.gitkeep
+scripts/python/data/*.csv
+!scripts/python/data/.gitkeep
+scripts/r/data/*.csv
+!scripts/r/data/.gitkeep
+
+# Training results and outputs
+training/catboost_info/
+scripts/python/results/
+scripts/r/results/
+scripts/r/figure/
+scripts/r/catboost_info/
+
+# Generated reports
+scripts/r/*.html
+*.html
+Rplots.pdf
+*.pdf
+
+# CatBoost training artifacts
+catboost_info/
+**/catboost_info/
+
+# TensorFlow events
+*.tfevents
+
+# Alert output files
+alerts_*.json
 
 # IDE
 .idea/
@@ -48,6 +79,7 @@ training/data/*.csv
 *.swp
 *.swo
 *~
+*.Rproj.user
 
 # OS
 .DS_Store
@@ -56,8 +88,14 @@ Thumbs.db
 # Logs
 *.log
 logs/
+/tmp/
 
 # Environment
 .env
 .env.local
+
+# R specific
+.Rhistory
+.RData
+.Ruserdata
 

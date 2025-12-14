@@ -1,0 +1,380 @@
+---
+title: "Fraud Detection Model Performance Report"
+author: "ML Pipeline Analysis"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    theme: flatly
+    highlight: tango
+    code_folding: hide
+    df_print: paged
+  pdf_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 10,
+  fig.height = 6,
+  fig.align = "center"
+)
+
+# Load libraries
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(scales)
+library(pROC)
+library(caret)
+```
+
+# Executive Summary {.tabset}
+
+This report presents a comprehensive analysis of fraud detection models trained on the UCI Credit Card Default dataset. Four machine learning algorithms were evaluated: **XGBoost**, **LightGBM**, **CatBoost**, and **Random Forest**.
+
+## Key Findings
+
+```{r load-results, echo=FALSE}
+# Load results
+results <- read_csv("results/model_comparison.csv", show_col_types = FALSE)
+thresholds <- read_csv("results/optimal_thresholds.csv", show_col_types = FALSE)
+
+# Best model
+best_model <- results %>% 
+  filter(model != "ensemble") %>%
+  arrange(desc(roc_auc)) %>%
+  slice(1)
+
+ensemble <- results %>% filter(model == "ensemble")
+```
+
+| Metric | Value |
+|--------|-------|
+| **Best Single Model** | `r toupper(best_model$model)` |
+| **Best ROC-AUC** | `r sprintf("%.4f", best_model$roc_auc)` |
+| **Ensemble ROC-AUC** | `r sprintf("%.4f", ensemble$roc_auc)` |
+| **Best F1 Score** | `r sprintf("%.4f", max(results$f1))` |
+| **Dataset Size** | 30,000 transactions |
+| **Default Rate** | ~22% |
+
+<br>
+
+# Data Overview
+
+```{r load-data}
+# Load test data
+X_test <- read_csv("results/X_test.csv", show_col_types = FALSE)
+y_test <- read_csv("results/y_test.csv", show_col_types = FALSE)$default
+
+X_train <- read_csv("results/X_train.csv", show_col_types = FALSE)
+y_train <- read_csv("results/y_train.csv", show_col_types = FALSE)$default
+```
+
+## Dataset Statistics
+
+```{r data-stats}
+data_stats <- tibble(
+  Metric = c("Training Samples", "Test Samples", "Total Features", 
+             "Default Rate (Train)", "Default Rate (Test)"),
+  Value = c(
+    format(nrow(X_train), big.mark = ","),
+    format(nrow(X_test), big.mark = ","),
+    ncol(X_train),
+    sprintf("%.1f%%", mean(y_train) * 100),
+    sprintf("%.1f%%", mean(y_test) * 100)
+  )
+)
+
+data_stats %>%
+  kable(align = "lr") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+## Class Distribution
+
+```{r class-distribution, fig.height=4}
+class_data <- tibble(
+  Dataset = c(rep("Train", 2), rep("Test", 2)),
+  Class = rep(c("No Default", "Default"), 2),
+  Count = c(sum(y_train == 0), sum(y_train == 1), 
+            sum(y_test == 0), sum(y_test == 1))
+)
+
+ggplot(class_data, aes(x = Dataset, y = Count, fill = Class)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = format(Count, big.mark = ",")), 
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  scale_fill_manual(values = c("No Default" = "#2ecc71", "Default" = "#e74c3c")) +
+  scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.15))) +
+  labs(title = "Class Distribution", y = "Number of Samples") +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+<br>
+
+# Model Performance {.tabset}
+
+## Comparison Table
+
+```{r results-table}
+results %>%
+  mutate(
+    model = toupper(model),
+    accuracy = percent(accuracy, accuracy = 0.1),
+    precision = sprintf("%.4f", precision),
+    recall = sprintf("%.4f", recall),
+    f1 = sprintf("%.4f", f1),
+    roc_auc = sprintf("%.4f", roc_auc)
+  ) %>%
+  select(Model = model, Accuracy = accuracy, Precision = precision, 
+         Recall = recall, `F1 Score` = f1, `ROC-AUC` = roc_auc) %>%
+  kable(align = "lrrrrr") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  row_spec(which(results$model == "ensemble"), bold = TRUE, background = "#f0f9ff") %>%
+  row_spec(which.max(results$roc_auc[results$model != "ensemble"]), 
+           bold = TRUE, color = "#27ae60")
+```
+
+## ROC-AUC Comparison
+
+```{r roc-auc-chart}
+results %>%
+  filter(model != "ensemble") %>%
+  ggplot(aes(x = reorder(model, roc_auc), y = roc_auc, fill = model)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = sprintf("%.4f", roc_auc)), hjust = -0.1, size = 4) +
+  geom_hline(yintercept = ensemble$roc_auc, linetype = "dashed", 
+             color = "red", linewidth = 1) +
+  annotate("text", x = 0.5, y = ensemble$roc_auc + 0.003, 
+           label = sprintf("Ensemble: %.4f", ensemble$roc_auc), 
+           color = "red", hjust = 0, size = 3.5) +
+  coord_flip() +
+  scale_fill_brewer(palette = "Set2") +
+  scale_y_continuous(limits = c(0.7, 0.82), oob = scales::oob_keep) +
+  labs(
+    title = "Model Comparison by ROC-AUC",
+    subtitle = "Higher is better | Dashed line = Ensemble performance",
+    x = NULL, y = "ROC-AUC"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.y = element_text(size = 11, face = "bold")
+  )
+```
+
+## F1 Score Comparison
+
+```{r f1-chart}
+results %>%
+  filter(model != "ensemble") %>%
+  ggplot(aes(x = reorder(model, f1), y = f1, fill = model)) +
+  geom_col(show.legend = FALSE) +
+  geom_text(aes(label = sprintf("%.4f", f1)), hjust = -0.1, size = 4) +
+  geom_hline(yintercept = ensemble$f1, linetype = "dashed", 
+             color = "red", linewidth = 1) +
+  coord_flip() +
+  scale_fill_brewer(palette = "Set2") +
+  scale_y_continuous(limits = c(0.5, 0.6), oob = scales::oob_keep) +
+  labs(
+    title = "Model Comparison by F1 Score",
+    subtitle = "Higher is better | Balance between precision and recall",
+    x = NULL, y = "F1 Score"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.y = element_text(size = 11, face = "bold")
+  )
+```
+
+## Precision vs Recall
+
+```{r precision-recall-chart}
+results %>%
+  filter(model != "ensemble") %>%
+  ggplot(aes(x = recall, y = precision, color = model)) +
+  geom_point(size = 5) +
+  geom_text(aes(label = toupper(model)), vjust = -1, size = 3.5) +
+  geom_point(data = ensemble, aes(x = recall, y = precision), 
+             color = "red", size = 6, shape = 18) +
+  annotate("text", x = ensemble$recall, y = ensemble$precision + 0.015,
+           label = "ENSEMBLE", color = "red", size = 3.5) +
+  scale_color_brewer(palette = "Set2") +
+  labs(
+    title = "Precision vs Recall Trade-off",
+    subtitle = "Top-right is ideal | Diamond = Ensemble",
+    x = "Recall (Fraud Detection Rate)",
+    y = "Precision"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+<br>
+
+# Optimal Thresholds
+
+The default classification threshold of 0.5 is not always optimal. Each model has been tuned to find the threshold that maximizes F1 score.
+
+```{r thresholds-table}
+thresholds %>%
+  mutate(
+    model = toupper(model),
+    optimal_threshold = sprintf("%.2f", optimal_threshold)
+  ) %>%
+  rename(Model = model, `Optimal Threshold` = optimal_threshold) %>%
+  kable(align = "lr") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+```{r thresholds-chart, fig.height=4}
+thresholds %>%
+  ggplot(aes(x = reorder(model, optimal_threshold), y = optimal_threshold, fill = model)) +
+  geom_col(show.legend = FALSE) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "gray50") +
+  geom_text(aes(label = sprintf("%.2f", optimal_threshold)), vjust = -0.5) +
+  annotate("text", x = 0.5, y = 0.52, label = "Default (0.5)", 
+           color = "gray50", hjust = 0, size = 3) +
+  scale_fill_brewer(palette = "Set2") +
+  scale_y_continuous(limits = c(0, 0.75), expand = expansion(mult = c(0, 0.1))) +
+  labs(
+    title = "Optimal Classification Thresholds",
+    subtitle = "Tuned to maximize F1 score",
+    x = NULL, y = "Threshold"
+  ) +
+  theme_minimal()
+```
+
+<br>
+
+# Model Rankings
+
+## Overall Ranking
+
+```{r rankings}
+rankings <- results %>%
+  filter(model != "ensemble") %>%
+  mutate(
+    rank_auc = rank(-roc_auc),
+    rank_f1 = rank(-f1),
+    rank_precision = rank(-precision),
+    rank_recall = rank(-recall),
+    avg_rank = (rank_auc + rank_f1 + rank_precision + rank_recall) / 4
+  ) %>%
+  arrange(avg_rank) %>%
+  mutate(overall_rank = row_number())
+
+rankings %>%
+  select(
+    Rank = overall_rank,
+    Model = model,
+    `ROC-AUC Rank` = rank_auc,
+    `F1 Rank` = rank_f1,
+    `Avg Rank` = avg_rank
+  ) %>%
+  mutate(Model = toupper(Model)) %>%
+  kable(align = "clccr", digits = 2) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
+  row_spec(1, bold = TRUE, background = "#d4edda")
+```
+
+## Radar Chart Comparison
+
+```{r radar-data, fig.height=7}
+# Normalize metrics to 0-1 scale for comparison
+radar_data <- results %>%
+  filter(model != "ensemble") %>%
+  mutate(
+    accuracy_norm = (accuracy - min(accuracy)) / (max(accuracy) - min(accuracy)),
+    precision_norm = (precision - min(precision)) / (max(precision) - min(precision)),
+    recall_norm = (recall - min(recall)) / (max(recall) - min(recall)),
+    f1_norm = (f1 - min(f1)) / (max(f1) - min(f1)),
+    roc_auc_norm = (roc_auc - min(roc_auc)) / (max(roc_auc) - min(roc_auc))
+  ) %>%
+  select(model, ends_with("_norm")) %>%
+  pivot_longer(-model, names_to = "metric", values_to = "value") %>%
+  mutate(metric = str_remove(metric, "_norm") %>% str_to_title())
+
+ggplot(radar_data, aes(x = metric, y = value, group = model, color = model)) +
+  geom_polygon(fill = NA, linewidth = 1.2) +
+  geom_point(size = 3) +
+  coord_polar() +
+  facet_wrap(~toupper(model), ncol = 2) +
+  scale_color_brewer(palette = "Set2") +
+  labs(
+    title = "Model Performance Profiles",
+    subtitle = "Normalized metrics (higher = better relative to other models)"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    axis.text.y = element_blank(),
+    strip.text = element_text(face = "bold", size = 12)
+  )
+```
+
+<br>
+
+# Conclusions & Recommendations
+
+## Key Takeaways
+
+1. **Best Performing Model**: `r toupper(best_model$model)` achieved the highest ROC-AUC of `r sprintf("%.4f", best_model$roc_auc)`
+
+2. **Ensemble Advantage**: The ensemble model combining all algorithms achieved ROC-AUC of `r sprintf("%.4f", ensemble$roc_auc)`, providing robust predictions
+
+3. **Threshold Optimization**: Models benefit from custom thresholds rather than the default 0.5
+
+4. **Class Imbalance**: With ~22% default rate, class weights and balanced sampling are essential
+
+## Recommendations
+
+```{r recommendations, echo=FALSE}
+best_threshold <- thresholds$optimal_threshold[thresholds$model == best_model$model]
+
+recommendations <- tibble(
+  Priority = c("High", "High", "Medium", "Medium", "Low"),
+  Recommendation = c(
+    paste0("Deploy ", toupper(best_model$model), " as primary model with threshold ", round(best_threshold, 2)),
+    "Use ensemble for high-stakes decisions requiring maximum accuracy",
+    "Monitor precision-recall trade-off based on business costs",
+    "Consider feature importance analysis for model interpretability",
+    "Evaluate SMOTE/ADASYN for synthetic minority oversampling"
+  )
+)
+
+recommendations %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+<br>
+
+# Appendix
+
+## Feature List
+
+```{r features}
+features <- names(X_train)
+cat(paste(1:length(features), features, sep = ". ", collapse = "\n"))
+```
+
+## Session Info
+
+```{r session-info}
+# Print session info in a code block to avoid YAML parsing issues
+cat(capture.output(sessionInfo()), sep = "\n")
+```
+
+<br>
+
+*Report generated on `r format(Sys.time(), "%B %d, %Y at %H:%M")`*
