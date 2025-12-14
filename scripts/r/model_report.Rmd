@@ -324,6 +324,189 @@ ggplot(radar_data, aes(x = metric, y = value, group = model, color = model)) +
 
 <br>
 
+# XGBoost vs CatBoost {.tabset}
+
+XGBoost and CatBoost are the top two performers. This section provides a detailed comparison.
+
+## Head-to-Head Comparison
+
+```{r xgb-vs-cb-data}
+# Extract XGBoost and CatBoost results
+xgb <- results %>% filter(model == "xgboost")
+cb <- results %>% filter(model == "catboost")
+
+comparison <- tibble(
+  Metric = c("ROC-AUC", "F1 Score", "Precision", "Recall", "Accuracy"),
+  XGBoost = c(xgb$roc_auc, xgb$f1, xgb$precision, xgb$recall, xgb$accuracy),
+  CatBoost = c(cb$roc_auc, cb$f1, cb$precision, cb$recall, cb$accuracy)
+) %>%
+  mutate(
+    Difference = XGBoost - CatBoost,
+    Winner = ifelse(Difference > 0, "XGBoost", ifelse(Difference < 0, "CatBoost", "Tie"))
+  )
+
+comparison %>%
+  mutate(
+    XGBoost = sprintf("%.4f", XGBoost),
+    CatBoost = sprintf("%.4f", CatBoost),
+    Difference = sprintf("%+.4f", as.numeric(Difference))
+  ) %>%
+  kable(align = "lrrrr") %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  column_spec(5, color = ifelse(comparison$Winner == "XGBoost", "#27ae60", 
+                                 ifelse(comparison$Winner == "CatBoost", "#e74c3c", "gray")))
+```
+
+## Visual Comparison
+
+```{r xgb-vs-cb-chart, fig.height=5}
+xgb_cb_data <- results %>%
+  filter(model %in% c("xgboost", "catboost")) %>%
+  select(model, roc_auc, f1, precision, recall, accuracy) %>%
+  pivot_longer(-model, names_to = "metric", values_to = "value") %>%
+  mutate(metric = factor(metric, levels = c("roc_auc", "f1", "precision", "recall", "accuracy")))
+
+ggplot(xgb_cb_data, aes(x = metric, y = value, fill = model)) +
+  geom_col(position = "dodge", width = 0.7) +
+  geom_text(aes(label = sprintf("%.3f", value)), 
+            position = position_dodge(width = 0.7), vjust = -0.5, size = 3.5) +
+  scale_fill_manual(values = c("catboost" = "#e74c3c", "xgboost" = "#3498db"),
+                    labels = c("CatBoost", "XGBoost")) +
+  scale_y_continuous(limits = c(0, 1), expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = "XGBoost vs CatBoost: Metric Comparison",
+    subtitle = "Side-by-side comparison of key performance metrics",
+    x = NULL, y = "Score", fill = "Model"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+```
+
+## Summary
+
+```{r xgb-cb-summary, echo=FALSE}
+xgb_wins <- sum(comparison$Winner == "XGBoost")
+cb_wins <- sum(comparison$Winner == "CatBoost")
+ties <- sum(comparison$Winner == "Tie")
+
+winner <- ifelse(xgb_wins > cb_wins, "XGBoost", "CatBoost")
+winner_color <- ifelse(winner == "XGBoost", "#3498db", "#e74c3c")
+```
+
+| Statistic | Value |
+|-----------|-------|
+| **Overall Winner** | `r winner` |
+| **XGBoost Wins** | `r xgb_wins` metrics |
+| **CatBoost Wins** | `r cb_wins` metrics |
+| **Ties** | `r ties` metrics |
+| **ROC-AUC Difference** | `r sprintf("%+.4f", xgb$roc_auc - cb$roc_auc)` |
+
+**Analysis**: `r winner` outperforms in `r max(xgb_wins, cb_wins)` out of 5 metrics. The performance difference is `r ifelse(abs(xgb$roc_auc - cb$roc_auc) < 0.01, "marginal (< 1%)", "notable")`, suggesting both models are viable for production use.
+
+<br>
+
+# Ensemble Analysis {.tabset}
+
+The ensemble combines all four models using weighted averaging based on individual performance.
+
+## Ensemble Configuration
+
+```{r ensemble-config}
+# Weights used in ensemble (from Rust project)
+weights <- tibble(
+  Model = c("XGBoost", "CatBoost", "LightGBM", "Random Forest"),
+  Weight = c(0.30, 0.28, 0.25, 0.17),
+  `Weight %` = paste0(c(30, 28, 25, 17), "%"),
+  Justification = c(
+    "Best ROC-AUC",
+    "Second best ROC-AUC", 
+    "Third best ROC-AUC",
+    "Fourth (baseline)"
+  )
+)
+
+weights %>%
+  kable(align = "lrlr") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+## Ensemble vs Best Single Model
+
+```{r ensemble-vs-best, fig.height=5}
+# Compare ensemble to best individual model
+best_single <- results %>% 
+  filter(model != "ensemble") %>%
+  arrange(desc(roc_auc)) %>%
+  slice(1)
+
+comparison_data <- tibble(
+  Model = c(toupper(best_single$model), "ENSEMBLE"),
+  `ROC-AUC` = c(best_single$roc_auc, ensemble$roc_auc),
+  F1 = c(best_single$f1, ensemble$f1),
+  Precision = c(best_single$precision, ensemble$precision),
+  Recall = c(best_single$recall, ensemble$recall)
+) %>%
+  pivot_longer(-Model, names_to = "Metric", values_to = "Value")
+
+ggplot(comparison_data, aes(x = Metric, y = Value, fill = Model)) +
+  geom_col(position = "dodge", width = 0.6) +
+  geom_text(aes(label = sprintf("%.3f", Value)), 
+            position = position_dodge(width = 0.6), vjust = -0.5, size = 4) +
+  scale_fill_manual(values = c("#2ecc71", "#9b59b6")) +
+  scale_y_continuous(limits = c(0, 1), expand = expansion(mult = c(0, 0.15))) +
+  labs(
+    title = sprintf("Ensemble vs %s (Best Single Model)", toupper(best_single$model)),
+    subtitle = "Ensemble provides slight improvement in ROC-AUC",
+    x = NULL, y = "Score"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+## Ensemble Benefits
+
+```{r ensemble-benefits}
+# Calculate improvement
+roc_improvement <- (ensemble$roc_auc - best_single$roc_auc) / best_single$roc_auc * 100
+f1_improvement <- (ensemble$f1 - best_single$f1) / best_single$f1 * 100
+
+benefits <- tibble(
+  Benefit = c(
+    "ROC-AUC Improvement",
+    "F1 Score Change",
+    "Robustness",
+    "Variance Reduction",
+    "Recommended Use"
+  ),
+  Description = c(
+    sprintf("%+.2f%% vs best single model", roc_improvement),
+    sprintf("%+.2f%% vs best single model", f1_improvement),
+    "Less sensitive to individual model failures",
+    "Averaging reduces prediction variance",
+    "High-stakes decisions requiring maximum accuracy"
+  )
+)
+
+benefits %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## When to Use Ensemble vs Single Model
+
+| Scenario | Recommendation | Reason |
+|----------|---------------|--------|
+| **Real-time Processing** | Single Model (XGBoost) | Lower latency (51μs vs 116μs) |
+| **High-Value Transactions** | Ensemble | Maximum accuracy |
+| **Resource Constrained** | Single Model | Less memory/compute |
+| **Batch Processing** | Ensemble | Latency less critical |
+| **Production Default** | Single Model | Balance of speed and accuracy |
+
+<br>
+
 # Conclusions & Recommendations
 
 ## Key Takeaways

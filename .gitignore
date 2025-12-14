@@ -40,15 +40,6 @@ models/*.csv
 models/*.json
 models/*.png
 
-# Data files (large, should be downloaded)
-training/data/*.csv
-training/data/*.parquet
-training/data/*.xls
-!training/data/.gitkeep
-scripts/python/data/*.csv
-!scripts/python/data/.gitkeep
-scripts/r/data/*.csv
-!scripts/r/data/.gitkeep
 
 # Training results and outputs
 training/catboost_info/
@@ -99,3 +90,4 @@ logs/
 .RData
 .Ruserdata
 
+.Rproj.user

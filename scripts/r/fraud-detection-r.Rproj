@@ -16,4 +16,5 @@ AutoAppendNewline: Yes
 StripTrailingWhitespace: Yes
 
 BuildType: Makefile
+
 MakefileArgs: all

@@ -1,10 +1,26 @@
-# Credit Card Default Prediction
+# Credit Card Default Prediction - Python Pipeline
 # Install: pip install -r requirements.txt
 
+# Core
 pandas>=2.0.0
 numpy>=1.24.0
 scikit-learn>=1.3.0
+
+# ML Models (same as Rust project)
+xgboost>=2.0.0
+catboost>=1.2.0
+lightgbm>=4.0.0
+
+# ONNX Export (for Rust compatibility)
+onnx>=1.14.0
+onnxmltools>=1.11.0
+skl2onnx>=1.15.0
+onnxruntime>=1.16.0
+
+# Visualization
 matplotlib>=3.7.0
 seaborn>=0.12.0
-shap>=0.42.0
 
+# Utilities
+joblib>=1.3.0
+tqdm>=4.65.0
